@@ -1,8 +1,10 @@
 import { connection } from "next/server";
 import { Suspense } from "react";
 
-import { getIssueList } from "@/lib/issues/queries";
+import { getIssueList, getProfiles } from "@/lib/issues/queries";
+import { parseIssueFilters } from "@/lib/issues/filters";
 
+import { IssueFilters } from "@/app/components/issues/IssueFilters";
 import { IssueList } from "@/app/components/issues/IssueList";
 import { IssuePagination } from "@/app/components/issues/IssuePagination";
 import { IssueSearch } from "@/app/components/issues/IssueSearch";
@@ -14,6 +16,9 @@ type IssuesPageProps = {
     page?: string;
     sort?: string;
     direction?: string;
+    status?: string;
+    priority?: string;
+    assignee?: string;
   }>;
 };
 
@@ -49,13 +54,23 @@ async function IssuesContent({
       ? params.direction
       : "desc";
 
-  const result = await getIssueList({
-    search,
-    page,
-    pageSize: 10,
-    sort,
-    direction,
+  const filters = parseIssueFilters({
+    status: params.status,
+    priority: params.priority,
+    assignee: params.assignee,
   });
+
+  const [result, assignees] = await Promise.all([
+    getIssueList({
+      search,
+      page,
+      pageSize: 10,
+      sort,
+      direction,
+      ...filters,
+    }),
+    getProfiles(),
+  ]);
 
   return (
     <>
@@ -85,10 +100,14 @@ async function IssuesContent({
       </div>
 
       <div className="mx-auto max-w-7xl px-6 py-8">
-        <div className="mb-6 flex items-center justify-between gap-4">
-          <IssueSearch />
+        <div className="mb-6 space-y-4">
+          <div className="flex items-center justify-between gap-4">
+            <IssueSearch />
 
-          <IssueSort />
+            <IssueSort />
+          </div>
+
+          <IssueFilters assignees={assignees} />
         </div>
 
         <IssueList issues={result.issues} />

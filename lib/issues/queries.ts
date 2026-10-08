@@ -1,5 +1,8 @@
 import { createClient } from '@/lib/supabase/server';
+import { getIssueFilterConditions } from './filters';
 import type {
+  IssuePriority,
+  IssueStatus,
   IssueWithRelations,
   Label,
   Profile,
@@ -38,6 +41,9 @@ export type IssueListOptions = {
   pageSize?: number;
   sort?: 'created_at' | 'priority' | 'title';
   direction?: 'asc' | 'desc';
+  status?: IssueStatus;
+  priority?: IssuePriority;
+  assignee?: string;
 };
 
 export async function getIssues(): Promise<IssueWithRelations[]> {
@@ -109,12 +115,30 @@ export async function getIssues(): Promise<IssueWithRelations[]> {
   });
 }
 
+export async function getProfiles(): Promise<Profile[]> {
+  const supabase = await createClient();
+
+  const { data, error } = await supabase
+    .from('profiles')
+    .select('id, name, avatar_url')
+    .order('name', { ascending: true });
+
+  if (error) {
+    throw new Error(`Failed to fetch assignees: ${error.message}`);
+  }
+
+  return (data ?? []) as Profile[];
+}
+
 export async function getIssueList({
   search,
   page = 1,
   pageSize = 10,
   sort = 'created_at',
   direction = 'desc',
+  status,
+  priority,
+  assignee,
 }: IssueListOptions = {}) {
   const supabase = await createClient();
 
@@ -155,6 +179,14 @@ export async function getIssueList({
     query = query.or(
       `title.ilike.%${value}%,description.ilike.%${value}%`,
     );
+  }
+
+  for (const condition of getIssueFilterConditions({
+    status,
+    priority,
+    assignee,
+  })) {
+    query = query.eq(condition.column, condition.value);
   }
 
   query = query.order(sort, {
