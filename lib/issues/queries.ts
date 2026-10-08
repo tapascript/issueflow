@@ -32,6 +32,14 @@ type IssueRow = {
   }[];
 };
 
+export type IssueListOptions = {
+  search?: string;
+  page?: number;
+  pageSize?: number;
+  sort?: 'created_at' | 'priority' | 'title';
+  direction?: 'asc' | 'desc';
+};
+
 export async function getIssues(): Promise<IssueWithRelations[]> {
   const supabase = await createClient();
 
@@ -99,4 +107,104 @@ export async function getIssues(): Promise<IssueWithRelations[]> {
       labels,
     };
   });
+}
+
+export async function getIssueList({
+  search,
+  page = 1,
+  pageSize = 10,
+  sort = 'created_at',
+  direction = 'desc',
+}: IssueListOptions = {}) {
+  const supabase = await createClient();
+
+  const from = (page - 1) * pageSize;
+  const to = from + pageSize - 1;
+
+  let query = supabase
+    .from('issues')
+    .select(
+      `
+        id,
+        title,
+        description,
+        status,
+        priority,
+        assignee_id,
+        created_at,
+        updated_at,
+        assignee:profiles (
+          id,
+          name,
+          avatar_url
+        ),
+        issue_labels (
+          labels (
+            id,
+            name,
+            color
+          )
+        )
+      `,
+      { count: 'exact' },
+    );
+
+  if (search?.trim()) {
+    const value = search.trim();
+
+    query = query.or(
+      `title.ilike.%${value}%,description.ilike.%${value}%`,
+    );
+  }
+
+  query = query.order(sort, {
+    ascending: direction === 'asc',
+  });
+
+  const { data, error, count } = await query.range(from, to);
+
+  if (error) {
+    throw new Error(`Failed to fetch issues: ${error.message}`);
+  }
+
+  const issues = (data ?? []) as IssueRow[];
+
+  const normalizedIssues: IssueWithRelations[] = issues.map(
+    (issue) => {
+      const assigneeData = issue.assignee?.[0] ?? null;
+
+      return {
+        id: issue.id,
+        title: issue.title,
+        description: issue.description,
+        status: issue.status,
+        priority: issue.priority,
+        assignee_id: issue.assignee_id,
+        created_at: issue.created_at,
+        updated_at: issue.updated_at,
+        assignee: assigneeData
+          ? {
+              id: assigneeData.id,
+              name: assigneeData.name,
+              avatar_url: assigneeData.avatar_url,
+            }
+          : null,
+        labels: issue.issue_labels
+          .flatMap((relation) => relation.labels ?? [])
+          .map((label) => ({
+            id: label.id,
+            name: label.name,
+            color: label.color,
+          })),
+      };
+    },
+  );
+
+  return {
+    issues: normalizedIssues,
+    total: count ?? 0,
+    page,
+    pageSize,
+    totalPages: Math.ceil((count ?? 0) / pageSize),
+  };
 }
