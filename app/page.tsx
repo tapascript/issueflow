@@ -1,22 +1,9 @@
 import Link from 'next/link';
+import { Suspense } from 'react';
 import { AppShell } from './components/layout/AppShell';
 import { getIssues } from '@/lib/issues/queries';
 
-export default async function HomePage() {
-  const issues = await getIssues();
-
-  const todoCount = issues.filter(
-    (issue) => issue.status === 'todo',
-  ).length;
-
-  const inProgressCount = issues.filter(
-    (issue) => issue.status === 'in_progress',
-  ).length;
-
-  const doneCount = issues.filter(
-    (issue) => issue.status === 'done',
-  ).length;
-
+export default function HomePage() {
   return (
     <AppShell>
       <div className="space-y-8">
@@ -35,11 +22,9 @@ export default async function HomePage() {
           </p>
         </div>
 
-        <div className="grid gap-4 sm:grid-cols-3">
-          <StatCard label="To do" value={todoCount} />
-          <StatCard label="In progress" value={inProgressCount} />
-          <StatCard label="Done" value={doneCount} />
-        </div>
+        <Suspense fallback={<StatCardsSkeleton />}>
+          <IssueStats />
+        </Suspense>
 
         <section className="rounded-xl border border-slate-200 bg-white p-6">
           <div className="flex items-center justify-between">
@@ -63,6 +48,30 @@ export default async function HomePage() {
   );
 }
 
+async function IssueStats() {
+  const issues = await getIssues();
+
+  const todoCount = issues.filter(
+    (issue) => issue.status === 'todo',
+  ).length;
+
+  const inProgressCount = issues.filter(
+    (issue) => issue.status === 'in_progress',
+  ).length;
+
+  const doneCount = issues.filter(
+    (issue) => issue.status === 'done',
+  ).length;
+
+  return (
+    <div className="grid gap-4 sm:grid-cols-3">
+      <StatCard label="To do" value={todoCount} />
+      <StatCard label="In progress" value={inProgressCount} />
+      <StatCard label="Done" value={doneCount} />
+    </div>
+  );
+}
+
 function StatCard({
   label,
   value,
@@ -74,6 +83,25 @@ function StatCard({
     <div className="rounded-xl border border-slate-200 bg-white p-5">
       <p className="text-sm text-slate-500">{label}</p>
       <p className="mt-2 text-3xl font-semibold">{value}</p>
+    </div>
+  );
+}
+
+function StatCardsSkeleton() {
+  return (
+    <div className="grid gap-4 sm:grid-cols-3">
+      <StatCardSkeleton label="To do" />
+      <StatCardSkeleton label="In progress" />
+      <StatCardSkeleton label="Done" />
+    </div>
+  );
+}
+
+function StatCardSkeleton({ label }: { label: string }) {
+  return (
+    <div className="rounded-xl border border-slate-200 bg-white p-5">
+      <p className="text-sm text-slate-500">{label}</p>
+      <div className="mt-2 h-9 w-16 animate-pulse rounded bg-slate-200" />
     </div>
   );
 }
