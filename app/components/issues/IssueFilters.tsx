@@ -54,11 +54,11 @@ export function IssueFilters({ assignees }: IssueFiltersProps) {
   return (
     <div className="flex flex-wrap items-end gap-4">
       <label className="flex flex-col gap-1.5">
-        <span className="text-sm text-slate-500">Status</span>
+        <span className="text-sm text-muted">Status</span>
         <select
           value={searchParams.get('status') ?? ''}
           onChange={(event) => updateFilter('status', event.target.value)}
-          className="rounded-md border border-slate-300 bg-white px-3 py-2 text-sm"
+          className="rounded-md border border-input bg-card px-3 py-2 text-sm text-foreground"
           aria-label="Filter by status"
         >
           <option value="">All statuses</option>
@@ -71,11 +71,11 @@ export function IssueFilters({ assignees }: IssueFiltersProps) {
       </label>
 
       <label className="flex flex-col gap-1.5">
-        <span className="text-sm text-slate-500">Priority</span>
+        <span className="text-sm text-muted">Priority</span>
         <select
           value={searchParams.get('priority') ?? ''}
           onChange={(event) => updateFilter('priority', event.target.value)}
-          className="rounded-md border border-slate-300 bg-white px-3 py-2 text-sm"
+          className="rounded-md border border-input bg-card px-3 py-2 text-sm text-foreground"
           aria-label="Filter by priority"
         >
           <option value="">All priorities</option>
@@ -88,11 +88,11 @@ export function IssueFilters({ assignees }: IssueFiltersProps) {
       </label>
 
       <label className="flex flex-col gap-1.5">
-        <span className="text-sm text-slate-500">Assignee</span>
+        <span className="text-sm text-muted">Assignee</span>
         <select
           value={searchParams.get('assignee') ?? ''}
           onChange={(event) => updateFilter('assignee', event.target.value)}
-          className="rounded-md border border-slate-300 bg-white px-3 py-2 text-sm"
+          className="rounded-md border border-input bg-card px-3 py-2 text-sm text-foreground"
           aria-label="Filter by assignee"
         >
           <option value="">All assignees</option>
@@ -105,7 +105,7 @@ export function IssueFilters({ assignees }: IssueFiltersProps) {
       </label>
 
       {isPending && (
-        <span className="pb-2 text-xs text-slate-400">Filtering...</span>
+        <span className="pb-2 text-xs text-muted">Filtering...</span>
       )}
     </div>
   );

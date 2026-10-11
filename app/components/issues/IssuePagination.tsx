@@ -31,7 +31,7 @@ export function IssuePagination({
 
   return (
     <div className="flex items-center justify-between">
-      <p className="text-sm text-slate-500">
+      <p className="text-sm text-muted">
         Page {page} of {totalPages}
       </p>
 
@@ -39,7 +39,7 @@ export function IssuePagination({
         {page > 1 && (
           <Link
             href={createHref(page - 1)}
-            className="rounded-md border border-slate-300 bg-white px-3 py-2 text-sm hover:bg-slate-50"
+            className="rounded-md border border-input bg-card px-3 py-2 text-sm hover:bg-hover"
           >
             Previous
           </Link>
@@ -48,7 +48,7 @@ export function IssuePagination({
         {page < totalPages && (
           <Link
             href={createHref(page + 1)}
-            className="rounded-md border border-slate-300 bg-white px-3 py-2 text-sm hover:bg-slate-50"
+            className="rounded-md border border-input bg-card px-3 py-2 text-sm hover:bg-hover"
           >
             Next
           </Link>

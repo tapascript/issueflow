@@ -32,7 +32,7 @@ export function IssueSort() {
 
   return (
     <div className="flex items-center gap-2">
-      <span className="text-sm text-slate-500">Sort:</span>
+      <span className="text-sm text-muted">Sort:</span>
 
       <select
         value={sort}
@@ -44,7 +44,7 @@ export function IssueSort() {
               | 'priority',
           )
         }
-        className="rounded-md border border-slate-300 bg-white px-3 py-2 text-sm"
+        className="rounded-md border border-input bg-card px-3 py-2 text-sm text-foreground"
         aria-label="Sort issues"
       >
         <option value="created_at">Created</option>
@@ -59,7 +59,7 @@ export function IssueSort() {
             sort as 'created_at' | 'title' | 'priority',
           )
         }
-        className="rounded-md border border-slate-300 px-3 py-2 text-sm hover:bg-slate-50"
+        className="rounded-md border border-input px-3 py-2 text-sm hover:bg-hover"
         aria-label="Toggle sort direction"
       >
         {direction === 'asc' ? '↑' : '↓'}

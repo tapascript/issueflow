@@ -33,11 +33,11 @@ export function IssueSearch() {
         onChange={(event) => handleSearch(event.target.value)}
         placeholder="Search issues..."
         aria-label="Search issues"
-        className="w-full rounded-md border border-slate-300 bg-white px-4 py-2.5 text-sm outline-none placeholder:text-slate-400 focus:border-slate-500 focus:ring-2 focus:ring-slate-200"
+        className="w-full rounded-md border border-input bg-card px-4 py-2.5 text-sm outline-none placeholder:text-faint focus:border-input focus:ring-2 focus:ring-ring"
       />
 
       {isPending && (
-        <span className="absolute right-3 top-1/2 -translate-y-1/2 text-xs text-slate-400">
+        <span className="absolute right-3 top-1/2 -translate-y-1/2 text-xs text-muted">
           Searching...
         </span>
       )}

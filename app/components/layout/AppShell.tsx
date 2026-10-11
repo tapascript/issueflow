@@ -1,6 +1,8 @@
 import Link from 'next/link';
 import type { ReactNode } from 'react';
 
+import { ThemeToggle } from '../theme/ThemeToggle';
+
 type AppShellProps = {
   children: ReactNode;
 };
@@ -8,11 +10,11 @@ type AppShellProps = {
 export function AppShell({ children }: AppShellProps) {
   return (
     <div className="min-h-screen">
-      <header className="border-b border-slate-200 bg-white">
+      <header className="border-b border-border bg-card">
         <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8">
           <Link
             href="/"
-            className="text-lg font-semibold tracking-tight text-slate-950"
+            className="text-lg font-semibold tracking-tight text-foreground"
           >
             IssueFlow
           </Link>
@@ -20,14 +22,16 @@ export function AppShell({ children }: AppShellProps) {
           <nav className="flex items-center gap-4 text-sm">
             <Link
               href="/issues"
-              className="text-slate-600 hover:text-slate-950"
+              className="text-subtle hover:text-foreground"
             >
               Issues
             </Link>
 
+            <ThemeToggle />
+
             <Link
               href="/issues/new"
-              className="rounded-md bg-slate-950 px-3 py-2 font-medium text-white hover:bg-slate-800"
+              className="rounded-md bg-primary px-3 py-2 font-medium text-primary-foreground hover:bg-primary-hover"
             >
               New issue
             </Link>
