@@ -1,5 +1,7 @@
 import { createClient } from '@/lib/supabase/server';
 import type {
+  IssuePriority,
+  IssueStatus,
   IssueWithRelations,
   Label,
   Profile,
@@ -32,8 +34,17 @@ type IssueRow = {
   }[];
 };
 
+type ProfileRow = {
+  id: string;
+  name: string;
+  avatar_url: string | null;
+};
+
 export type IssueListOptions = {
   search?: string;
+  status?: IssueStatus;
+  priority?: IssuePriority;
+  assigneeId?: string;
   page?: number;
   pageSize?: number;
   sort?: 'created_at' | 'priority' | 'title';
@@ -109,8 +120,32 @@ export async function getIssues(): Promise<IssueWithRelations[]> {
   });
 }
 
+export async function getProfiles(): Promise<Profile[]> {
+  const supabase = await createClient();
+
+  const { data, error } = await supabase
+    .from('profiles')
+    .select('id, name, avatar_url')
+    .order('name');
+
+  if (error) {
+    throw new Error(`Failed to fetch profiles: ${error.message}`);
+  }
+
+  const profiles = (data ?? []) as ProfileRow[];
+
+  return profiles.map((profile) => ({
+    id: profile.id,
+    name: profile.name,
+    avatar_url: profile.avatar_url,
+  }));
+}
+
 export async function getIssueList({
   search,
+  status,
+  priority,
+  assigneeId,
   page = 1,
   pageSize = 10,
   sort = 'created_at',
@@ -155,6 +190,18 @@ export async function getIssueList({
     query = query.or(
       `title.ilike.%${value}%,description.ilike.%${value}%`,
     );
+  }
+
+  if (status) {
+    query = query.eq('status', status);
+  }
+
+  if (priority) {
+    query = query.eq('priority', priority);
+  }
+
+  if (assigneeId) {
+    query = query.eq('assignee_id', assigneeId);
   }
 
   query = query.order(sort, {
