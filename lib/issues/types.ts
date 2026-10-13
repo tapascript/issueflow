@@ -6,6 +6,12 @@ export type IssuePriority =
   | 'high'
   | 'critical';
 
+export type IssueFilters = {
+  status?: IssueStatus;
+  priority?: IssuePriority;
+  assigneeId?: string;
+};
+
 export type Issue = {
   id: number;
   title: string;

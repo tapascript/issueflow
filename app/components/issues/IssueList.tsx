@@ -31,7 +31,7 @@ export function IssueList({ issues }: IssueListProps) {
         </h2>
 
         <p className="mt-2 text-sm text-slate-500">
-          Try changing your search or create a new issue.
+          Try adjusting your search or filters, or create a new issue.
         </p>
 
         <Link
