@@ -7,7 +7,6 @@
 Track engineering work, collaborate with your team, and keep issues moving toward completion.
 
 [![YouTube](https://img.shields.io/badge/Watch%20the%20build-FF0000?style=for-the-badge&logo=youtube&logoColor=white)](https://youtu.be/Ms9VOyoWDpI)
-[![GitHub stars](https://img.shields.io/github/stars/tapascript/issueflow?style=for-the-badge&color=yellow&logo=github)](https://github.com/tapascript/issueflow)
 
 </div>
 
